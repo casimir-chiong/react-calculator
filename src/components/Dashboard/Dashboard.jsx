@@ -6,7 +6,7 @@ class Dashboard extends Component {
     switch (type) {
       case "number":
         return this.props.onNumberClick;
-      case "other":
+      case "other": {
         switch (id) {
           case "clear":
             return this.props.onClearClick;
@@ -17,6 +17,9 @@ class Dashboard extends Component {
           default:
             return;
         }
+      }
+      case "operation":
+        return this.props.onOperationClick;
       default:
         break;
     }

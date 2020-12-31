@@ -1,14 +1,10 @@
 import React, { Component } from "react";
 
 class Display extends Component {
-  getNumberWithCommas = (number, length) => {
-    if (length >= 4) {
-      const parts = number.toString().split(".");
-      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      return parts.join(".");
-    }
-
-    return number;
+  getNumberWithCommas = (str) => {
+    let parts = str.split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
   };
   getSize = (length) => {
     return length > 5 ? length - 4 : 1;
@@ -17,15 +13,13 @@ class Display extends Component {
     return `app__display__text_wrapper__text--${size}`;
   };
   render() {
-    const { display } = this.props;
+    const { value } = this.props.display;
 
     return (
       <div className="app__display">
         <div className="app__display__text_wrapper">
-          <h1
-            className={this.getClass(this.getSize(display.toString().length))}
-          >
-            {this.getNumberWithCommas(display, display.toString().length)}
+          <h1 className={this.getClass(this.getSize(value.toString().length))}>
+            {this.getNumberWithCommas(value)}
           </h1>
         </div>
       </div>

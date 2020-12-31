@@ -6,7 +6,7 @@ class DashboardButton extends Component {
   render() {
     const { id, display, className, label, onClick } = this.props;
 
-    if (id === "0") {
+    if (id === 0) {
       return (
         <button
           key={id}
@@ -19,7 +19,7 @@ class DashboardButton extends Component {
     } else if (id === "clear") {
       return (
         <button className="app__dashboard__other" onClick={() => onClick(id)}>
-          {display === "0" ? label : "C"}
+          {display.value === "0" ? label : "C"}
         </button>
       );
     }
