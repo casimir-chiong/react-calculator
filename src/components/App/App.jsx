@@ -7,19 +7,21 @@ class App extends Component {
     display: {
       value: "0",
       expression: "a",
+      onOperation: false,
     },
     expression: {
+      operation: undefined,
       a: {
         value: 0,
         zerosAfter: 0,
         onNegative: false,
-        onPercentage: false,
+        clearOnNumberClick: false,
       },
       b: {
         value: 0,
         zerosAfter: 0,
         onNegative: false,
-        onPercentage: false,
+        clearOnNumberClick: false,
       },
     },
     dashboard: [
@@ -54,17 +56,6 @@ class App extends Component {
       ],
     ],
   };
-  isLengthLimit = (str) => {
-    const charArr = [];
-
-    for (let i = 0; i < str.length; i++) {
-      const char = str[i];
-
-      if (char !== "." && char !== "-") charArr.push(char);
-    }
-
-    return charArr.length >= 9 ? true : false;
-  };
   gotDecimal = (str) => {
     return str.includes(".");
   };
@@ -75,25 +66,35 @@ class App extends Component {
 
     return str;
   };
+  getCurrentExpression = () => {
+    const { expression, onOperation } = this.state.display;
+
+    if (onOperation) {
+      if (expression === "a") return "b";
+      if (expression === "b") return "a";
+    } else return expression;
+  };
   handleNumberClickOnZero = (num) => {
     const { display, expression } = this.state;
-    const currentExpression = expression[display.expression];
+    const currentExpressionChar = this.getCurrentExpression();
+    const currentExpression = expression[currentExpressionChar];
     const { onNegative, zerosAfter } = currentExpression;
-    const isDecimal = display.value.includes(".");
+    const isDecimal = display.value.includes(".") && !display.onOperation;
 
     if (isDecimal && num === ".") return;
 
     if (isDecimal) {
       this.setState({
         display: {
-          ...display,
+          expression: currentExpressionChar,
           value: `${onNegative ? "-" : ""}0.${this.getZerosString(
             zerosAfter
           )}${num}`,
+          onOperation: false,
         },
         expression: {
           ...expression,
-          [display.expression]: {
+          [currentExpressionChar]: {
             ...currentExpression,
             value: +`${onNegative ? "-" : ""}0.${this.getZerosString(
               zerosAfter
@@ -109,12 +110,13 @@ class App extends Component {
     if (num === ".") {
       this.setState({
         display: {
-          ...display,
+          expression: currentExpressionChar,
           value: `${onNegative ? "-" : ""}0.`,
+          onOperation: false,
         },
         expression: {
           ...expression,
-          [display.expression]: {
+          [currentExpressionChar]: {
             ...currentExpression,
             value: 0,
           },
@@ -127,12 +129,13 @@ class App extends Component {
     if (onNegative) {
       this.setState({
         display: {
-          ...display,
+          expression: currentExpressionChar,
           value: `-${num}`,
+          onOperation: false,
         },
         expression: {
           ...expression,
-          [display.expression]: {
+          [currentExpressionChar]: {
             ...currentExpression,
             value: +`-${num}`,
           },
@@ -144,12 +147,13 @@ class App extends Component {
 
     this.setState({
       display: {
-        ...display,
+        expression: currentExpressionChar,
         value: `${num}`,
+        onOperation: false,
       },
       expression: {
         ...expression,
-        [display.expression]: {
+        [currentExpressionChar]: {
           ...currentExpression,
           value: +`${num}`,
         },
@@ -158,25 +162,25 @@ class App extends Component {
   };
   handleNumberClick = (num) => {
     const { display, expression } = this.state;
-    const currentExpression = expression[display.expression];
-    const { value, onPercentage, zerosAfter } = currentExpression;
+    const currentExpressionChar = this.getCurrentExpression();
+    const currentExpression = expression[currentExpressionChar];
+    const { value, clearOnNumberClick, zerosAfter } = currentExpression;
     const isDecimal = value % 1 !== 0;
     const gotDecimal = display.value.includes(".");
     const isLastDecimal = display.value[display.value.length - 1] === ".";
 
-    if (onPercentage) {
+    if (!value && value !== 0) {
       this.setState({
         display: {
-          ...display,
-          value: `${num}`,
+          value: `Error`,
+          expression: currentExpressionChar,
+          onOperation: false,
         },
         expression: {
           ...expression,
-          [display.expression]: {
-            value: `${num}`,
-            zerosAfter: 0,
-            onNegative: false,
-            onPercentage: false,
+          [currentExpressionChar]: {
+            ...currentExpression,
+            value,
           },
         },
       });
@@ -184,19 +188,40 @@ class App extends Component {
       return;
     }
 
-    if (this.isLengthLimit(display.value)) return;
+    if (clearOnNumberClick) {
+      this.setState({
+        display: {
+          value: `${num}`,
+          expression: currentExpressionChar,
+          onOperation: false,
+        },
+        expression: {
+          ...expression,
+          [currentExpressionChar]: {
+            value: `${num}`,
+            zerosAfter: 0,
+            onNegative: false,
+            clearOnNumberClick: false,
+          },
+        },
+      });
+
+      return;
+    }
+
     if ((isDecimal || gotDecimal) && num === ".") return;
     if (value === 0) return this.handleNumberClickOnZero(num);
 
     if (isLastDecimal) {
       this.setState({
         display: {
-          ...display,
           value: `${value}.${this.getZerosString(zerosAfter)}${num}`,
+          expression: currentExpressionChar,
+          onOperation: false,
         },
         expression: {
           ...expression,
-          [display.expression]: {
+          [currentExpressionChar]: {
             ...currentExpression,
             value: +`${value}.${this.getZerosString(zerosAfter)}${num}`,
             zerosAfter: num === 0 ? zerosAfter + 1 : 0,
@@ -210,12 +235,13 @@ class App extends Component {
     if (!isDecimal && gotDecimal) {
       this.setState({
         display: {
-          ...display,
           value: `${value}.${this.getZerosString(zerosAfter)}${num}`,
+          expression: currentExpressionChar,
+          onOperation: false,
         },
         expression: {
           ...expression,
-          [display.expression]: {
+          [currentExpressionChar]: {
             ...currentExpression,
             value: +`${value}.${this.getZerosString(zerosAfter)}${num}`,
             zerosAfter: num === 0 ? zerosAfter + 1 : 0,
@@ -228,12 +254,13 @@ class App extends Component {
     if (isDecimal) {
       this.setState({
         display: {
-          ...display,
           value: `${value}${this.getZerosString(zerosAfter)}${num}`,
+          expression: currentExpressionChar,
+          onOperation: false,
         },
         expression: {
           ...expression,
-          [display.expression]: {
+          [currentExpressionChar]: {
             ...currentExpression,
             value: +`${value}${this.getZerosString(zerosAfter)}${num}`,
             zerosAfter: num === 0 ? zerosAfter + 1 : 0,
@@ -246,12 +273,13 @@ class App extends Component {
 
     this.setState({
       display: {
-        ...display,
         value: `${value}${num}`,
+        expression: currentExpressionChar,
+        onOperation: false,
       },
       expression: {
         ...expression,
-        [display.expression]: {
+        [currentExpressionChar]: {
           ...currentExpression,
           value: +`${value}${num}`,
         },
@@ -261,7 +289,7 @@ class App extends Component {
   handleClearClick = () => {
     const { display, expression } = this.state;
 
-    if (expression[display.expression].value) {
+    if (expression[this.getCurrentExpression()].value) {
       this.setState({
         display: {
           ...display,
@@ -269,10 +297,10 @@ class App extends Component {
         },
         expression: {
           ...expression,
-          [display.expression]: {
+          [this.getCurrentExpression()]: {
             value: 0,
             onNegative: false,
-            onPercentage: false,
+            clearOnNumberClick: false,
             zerosAfter: 0,
           },
         },
@@ -280,21 +308,22 @@ class App extends Component {
     } else {
       this.setState({
         display: {
-          ...display,
+          expression: "a",
           value: "0",
+          onOperation: false,
         },
         expression: {
           ...expression,
           a: {
             value: 0,
             onNegative: false,
-            onPercentage: false,
+            clearOnNumberClick: false,
             zerosAfter: 0,
           },
           b: {
             value: 0,
             onNegative: false,
-            onPercentage: false,
+            clearOnNumberClick: false,
             zerosAfter: 0,
           },
         },
@@ -303,7 +332,7 @@ class App extends Component {
   };
   handleSwitchClick = () => {
     const { display, expression } = this.state;
-    const currentExpression = expression[display.expression];
+    const currentExpression = expression[this.getCurrentExpression()];
 
     if (currentExpression.value === 0) {
       let displayValue;
@@ -318,7 +347,7 @@ class App extends Component {
           },
           expression: {
             ...expression,
-            [display.expression]: {
+            [this.getCurrentExpression()]: {
               ...currentExpression,
               onNegative: !currentExpression.onNegative,
             },
@@ -332,7 +361,7 @@ class App extends Component {
           },
           expression: {
             ...expression,
-            [display.expression]: {
+            [this.getCurrentExpression()]: {
               ...currentExpression,
               onNegative: !currentExpression.onNegative,
             },
@@ -347,7 +376,7 @@ class App extends Component {
         },
         expression: {
           ...expression,
-          [display.expression]: {
+          [this.getCurrentExpression()]: {
             ...currentExpression,
             value: currentExpression.value * -1,
           },
@@ -357,32 +386,10 @@ class App extends Component {
   };
   handlePercentageClick = () => {
     const { display, expression } = this.state;
-    const currentExpression = expression[display.expression];
+    const currentExpression = expression[this.getCurrentExpression()];
 
     let result = currentExpression.value / 100;
     let resultString = result.toString();
-
-    if (this.isLengthLimit(resultString)) {
-      if (resultString.includes("e")) {
-        let partOne = "";
-        let partTwo = "";
-
-        for (let i = 0; i < resultString.length; i++) {
-          const char = resultString[i];
-
-          if (i < 6) partOne += char;
-          else if (i > resultString.length - 5) partTwo += char;
-        }
-
-        if (partTwo[0] !== "e") partTwo = partTwo.slice(1);
-
-        resultString = partTwo.includes("e")
-          ? `${+partOne}${partTwo}`
-          : "Error";
-      } else {
-        resultString = (+result.toFixed(8)).toString();
-      }
-    }
 
     this.setState({
       display: {
@@ -391,21 +398,77 @@ class App extends Component {
       },
       expression: {
         ...expression,
-        [display.expression]: {
+        [this.getCurrentExpression()]: {
           ...currentExpression,
           value: result,
-          onPercentage: true,
+          clearOnNumberClick: true,
         },
       },
     });
   };
-  handleAddition = (a, b) => a + b;
-  handleSubtraction = (a, b) => a - b;
-  handleMultiplication = (a, b) => a * b;
-  handleDivision = (a, b) => a / b;
   handleOperationClick = (type) => {
-    console.log(type);
+    const { display, expression } = this.state;
+    const { a, b, operation } = expression;
+
+    if (operation && b.value) {
+      let result = this.getAnswer(operation, a.value, b.value);
+      let resultString = result.toString();
+
+      this.setState({
+        display: {
+          ...display,
+          value: resultString,
+          onOperation: type !== "equal",
+          expression: "a",
+        },
+        expression: {
+          ...expression,
+          a: {
+            onNegative: false,
+            clearOnNumberClick: true,
+            value: result,
+            zerosAfter: 0,
+          },
+          b: {
+            onNegative: false,
+            clearOnNumberClick: false,
+            value: 0,
+            zerosAfter: 0,
+          },
+          operation: type !== "equal" ? type : undefined,
+        },
+      });
+    } else {
+      this.setState({
+        display: {
+          ...display,
+          onOperation: type !== "equal",
+        },
+        expression: {
+          ...expression,
+          operation: type !== "equal" ? type : undefined,
+        },
+      });
+    }
   };
+  getAnswer = (operation, a, b) => {
+    switch (operation) {
+      case "addition":
+        return this.getAddition(a, b);
+      case "subtraction":
+        return this.getSubtraction(a, b);
+      case "multiplication":
+        return this.getMultiplication(a, b);
+      case "division":
+        return this.getDivision(a, b);
+      default:
+        break;
+    }
+  };
+  getAddition = (a, b) => a + b;
+  getSubtraction = (a, b) => a - b;
+  getMultiplication = (a, b) => a * b;
+  getDivision = (a, b) => a / b;
   render() {
     return (
       <div className="app">
@@ -416,8 +479,8 @@ class App extends Component {
           onNumberClick={this.handleNumberClick}
           onClearClick={this.handleClearClick}
           onSwitchClick={this.handleSwitchClick}
-          onPercentageClick={this.handlePercentageClick}
           onOperationClick={this.handleOperationClick}
+          onPercentageClick={this.handlePercentageClick}
         />
       </div>
     );
