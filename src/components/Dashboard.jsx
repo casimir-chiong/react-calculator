@@ -2,28 +2,6 @@ import React, { Component } from "react";
 import DashboardButton from "./DashboardButton";
 
 class Dashboard extends Component {
-  // getClickFunc = (type, id) => {
-  //   switch (type) {
-  //     case "number":
-  //       return this.props.onNumberClick;
-  //     case "other": {
-  //       switch (id) {
-  //         case "clear":
-  //           return this.props.onClearClick;
-  //         case "switch":
-  //           return this.props.onSwitchClick;
-  //         case "percentage":
-  //           return this.props.onPercentageClick;
-  //         default:
-  //           return;
-  //       }
-  //     }
-  //     case "operation":
-  //       return this.props.onOperationClick;
-  //     default:
-  //       break;
-  //   }
-  // };
   getButtons = () => {
     const buttons = [];
     this.props.dashboard.forEach((line) => {
