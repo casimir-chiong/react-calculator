@@ -27,7 +27,7 @@
   min-height: 64px;
   display: flex;
   align-items: center;
-  overflow: scroll;
+  overflow-x: auto;
 }
 
 .app__display__text_wrapper__text {
@@ -53,12 +53,12 @@
   font-size: 32px;
 }
 
-.app__dashboard__other {
+.app__dashboard__operation {
   color: #000;
   background-color: #a5a5a5;
 }
 
-.app__dashboard__operation {
+.app__dashboard__calculate {
   color: #fff;
   background-color: #fe9e0a;
 }
