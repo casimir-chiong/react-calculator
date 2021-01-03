@@ -4,22 +4,27 @@ import DashboardButton from "./DashboardButton";
 class Dashboard extends Component {
   getButtons = () => {
     const buttons = [];
+
     this.props.dashboard.forEach((line) => {
-      line.forEach(({ id, type, label }) => {
+      line.forEach(({ id, label, orange, wide, grey }) => {
         buttons.push(
           <DashboardButton
             key={id}
             id={id}
+            label={label ? label : id}
+            grey={grey}
+            orange={orange}
+            wide={wide}
             display={this.props.display}
-            type={type}
-            label={label}
             onClick={this.props.onClick}
           />
         );
       });
     });
+
     return buttons;
   };
+
   render() {
     return (
       <div className="app__dashboard">

@@ -7,13 +7,13 @@ class Display extends Component {
     return parts.join(".");
   };
   render() {
-    const { value } = this.props.display;
+    const { display } = this.props;
 
     return (
       <div className="app__display">
         <div className="app__display__text_wrapper">
           <h1 className="app__display__text_wrapper__text">
-            {this.getNumberWithCommas(value)}
+            {this.getNumberWithCommas(display ? display : "0")}
           </h1>
         </div>
       </div>

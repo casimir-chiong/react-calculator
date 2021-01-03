@@ -51,24 +51,21 @@
   border: none;
   border-radius: 50%;
   font-size: 32px;
-}
-
-.app__dashboard__operation {
-  color: #000;
-  background-color: #a5a5a5;
-}
-
-.app__dashboard__calculate {
-  color: #fff;
-  background-color: #fe9e0a;
-}
-
-.app__dashboard__number {
   color: #fff;
   background-color: #333;
 }
 
-.app__dashboard .app__dashboard__number_zero {
+.app__dashboard .app__dashboard__grey {
+  color: #000;
+  background-color: #a5a5a5;
+}
+
+.app__dashboard .app__dashboard__orange {
+  color: #fff;
+  background-color: #fe9e0a;
+}
+
+.app__dashboard .app__dashboard__wide {
   padding-left: 32px;
   width: 144px !important;
   grid-column: 1/3;
