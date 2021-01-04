@@ -4,19 +4,11 @@ class DashboardButton extends Component {
   getClass = (className) => `app__dashboard__${className}`;
 
   render() {
-    const { id, label, grey, orange, wide, display, onClick } = this.props;
-
-    if (id === "clear") {
-      return (
-        <button className={this.getClass()} onClick={() => onClick()}>
-          {display === "0" ? label : "C"}
-        </button>
-      );
-    }
+    const { id, buttonStyle, display, onClick } = this.props;
 
     return (
-      <button className={this.getClass(grey || orange || wide)} onClick={() => onClick()}>
-        {label}
+      <button className={this.getClass(buttonStyle)} onClick={() => onClick(id)}>
+        {id !=="clear" ? id : (display  ? "C" : "AC")}
       </button>
     );
   }
