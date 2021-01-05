@@ -1,7 +1,13 @@
 import React, { Component } from "react";
 import DashboardButton from "./DashboardButton";
+import PropTypes from "prop-types";
 
 class Dashboard extends Component {
+  static propTypes = {
+    display: PropTypes.string,
+    onClick: PropTypes.func.isRequired,
+  };
+
   render() {
     const { display, onClick } = this.props;
 

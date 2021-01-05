@@ -1,6 +1,11 @@
-import React from "react";
+import React, { StrictMode } from "react";
 import ReactDOM from "react-dom";
 import Calculator from "./components/Calculator";
 import "./index.css";
 
-ReactDOM.render(<Calculator />, document.getElementById("root"));
+ReactDOM.render(
+  <StrictMode>
+    <Calculator />
+  </StrictMode>,
+  document.getElementById("root")
+);

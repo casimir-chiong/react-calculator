@@ -21,7 +21,7 @@ class Calculator extends Component {
 
     return (
       <div className="app">
-        <Display text={displayText} />
+        <Display text={displayText || "0"} />
         <Dashboard display={this.state.next} onClick={this.handleClick} />
       </div>
     );
